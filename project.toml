@@ -5,3 +5,9 @@ value = "21"
 [[build.env]]
 name = "BP_JVM_TYPE"
 value = "corretto"
+
+[[build.buildpacks]]
+uri = "paketo-buildpacks/amazon-corretto"
+
+[[build.buildpacks]]
+uri = "paketo-buildpacks/java"
