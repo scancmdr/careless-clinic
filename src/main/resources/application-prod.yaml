@@ -48,12 +48,9 @@ spring:
 # Production server configuration
 server:
   port: ${PORT:8080}
-  forward-headers-strategy: native
+  forward-headers-strategy: framework
   shutdown: graceful
   tomcat:
-    remoteip:
-      remote-ip-header: x-forwarded-for
-      protocol-header: x-forwarded-proto
     connection-timeout: 20s
 
 # Actuator configuration for health checks (required by Dokploy)

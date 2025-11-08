@@ -38,6 +38,11 @@ spring:
               - email
               - profile
 
+# Server configuration
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+
 # Logging configuration
 
 
