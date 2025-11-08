@@ -6,8 +6,18 @@ value = "21"
 name = "BP_JVM_TYPE"
 value = "corretto"
 
+[[build.env]]
+name = "BP_MAVEN_BUILD_ARGUMENTS"
+value = "clean package -DskipTests"
+
 [[build.buildpacks]]
 uri = "paketo-buildpacks/amazon-corretto"
 
 [[build.buildpacks]]
-uri = "paketo-buildpacks/java"
+uri = "paketo-buildpacks/maven"
+
+[[build.buildpacks]]
+uri = "paketo-buildpacks/executable-jar"
+
+[[build.buildpacks]]
+uri = "paketo-buildpacks/spring-boot"

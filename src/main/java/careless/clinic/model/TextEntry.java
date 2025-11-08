@@ -29,4 +29,7 @@ public class TextEntry {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Transient
+    private boolean jwtVerified;
 }

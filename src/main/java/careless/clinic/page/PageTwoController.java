@@ -28,7 +28,7 @@ public class PageTwoController {
     @GetMapping()
     public String pageOne(Model model) {
         model.addAttribute("entries", getAllEntries());
-        return "page-one";
+        return "page-two";
     }
 
     @PostMapping("/submit")
@@ -39,13 +39,13 @@ public class PageTwoController {
             safeSave(e.getMessage(), Tools.getStackTraceAsString(e));
             log.error("error saving text entry", e);
         }
-        return "redirect:/page-one";
+        return "redirect:/page-two";
     }
 
     @PostMapping("/delete")
     public String deleteEntry(@RequestParam("id") Long id) {
         deleteById(id);
-        return "redirect:/page-one";
+        return "redirect:/page-two";
     }
 
     private void save(String text) throws Exception {
@@ -94,6 +94,12 @@ public class PageTwoController {
                         .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
                         .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                         .build();
+
+                // Validate JWT signature if content appears to be a JWT token
+                if (entry.getContent() != null && entry.getContent().trim().matches("^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$")) {
+                    entry.setJwtVerified(Tools.validateJwtSignature(entry.getContent().trim()));
+                }
+
                 entries.add(entry);
             }
 

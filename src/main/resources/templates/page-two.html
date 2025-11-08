@@ -125,6 +125,14 @@
             background: #f8f9fa;
         }
 
+        .jwt-verified {
+            background-color: #ffcccc !important;
+        }
+
+        .jwt-verified:hover {
+            background-color: #ffb3b3 !important;
+        }
+
         .no-entries {
             text-align: center;
             padding: 2rem;
@@ -350,7 +358,7 @@
         <!-- Input Form -->
         <div class="form-section">
             <h3>Submit New Entry</h3>
-            <form class="pure-form" method="post" th:action="@{/page-one/submit}">
+            <form class="pure-form" method="post" th:action="@{/page-two/submit}">
                 <input class="input-text"
                        name="text"
                        placeholder="Enter your text here..."
@@ -372,7 +380,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="entry : ${entries}">
+                <tr th:each="entry : ${entries}" th:classappend="${entry.jwtVerified} ? 'jwt-verified' : ''">
                     <td>
                         <span th:if="${#strings.length(entry.content) <= 60}" th:text="${entry.content}"></span>
                         <span th:if="${#strings.length(entry.content) > 60}">
@@ -386,7 +394,7 @@
                     </td>
                     <td th:text="${#temporals.format(entry.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                     <td>
-                        <form method="post" style="display: inline;" th:action="@{/page-one/delete}">
+                        <form method="post" style="display: inline;" th:action="@{/page-two/delete}">
                             <input name="id" th:value="${entry.id}" type="hidden">
                             <button class="delete-button" type="submit">Delete</button>
                         </form>
