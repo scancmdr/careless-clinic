@@ -8,13 +8,13 @@ FROM owasp/modsecurity-crs:nginx-alpine
 ENV PROXY_UPSTREAM_HOST=spring-boot-service:8080
 
 # The base image uses environment variables to configure ModSecurity
-# Use conf.d approach instead of replacing the entire nginx.conf
-# Remove any default server configs that might conflict
-RUN rm -f /etc/nginx/conf.d/default.conf 2>/dev/null || true
+# The base image processes templates in /etc/nginx/templates/ and outputs to /etc/nginx/conf.d/
+# Remove any default templates that might conflict
+RUN rm -f /etc/nginx/templates/*.template 2>/dev/null || true
 
-# Copy our custom server configuration to conf.d
-# This will be included by the main nginx.conf from the base image
-COPY nginx.conf /etc/nginx/conf.d/proxy.conf
+# Copy our custom server configuration as a template
+# The entrypoint will process this with envsubst and place it in /etc/nginx/conf.d/
+COPY nginx.conf /etc/nginx/templates/proxy.conf.template
 
 # Ensure we're root for setup operations
 USER root
