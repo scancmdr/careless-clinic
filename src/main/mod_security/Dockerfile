@@ -14,13 +14,12 @@ RUN rm /etc/nginx/nginx.conf
 # This file will enable ModSecurity and proxy traffic to the Spring Boot app.
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Switch to root to create directories and set permissions
+# Ensure we're root for setup operations
 USER root
-RUN mkdir -p /var/lib/nginx /var/log/nginx && \
-    chown -R nginx:nginx /var/lib/nginx /var/log/nginx
 
-# Switch back to nginx user for runtime
-USER nginx
+# Create necessary directories and set permissions
+RUN mkdir -p /var/lib/nginx /var/log/nginx && \
+    chown -R nginx:nginx /var/lib/nginx /var/log/nginx /etc/nginx
 
 # Nginx with ModSecurity is now listening on port 80
 EXPOSE 80
