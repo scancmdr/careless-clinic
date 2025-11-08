@@ -20,7 +20,7 @@ RUN rm -f /etc/nginx/templates/*.template 2>/dev/null || true
 # Copy our custom server configuration as a template
 # The entrypoint will process this with envsubst and place it in /etc/nginx/conf.d/
 COPY nginx.conf /etc/nginx/templates/proxy.conf.template
-COPY nginx.conf /etc/nginx/conf.d/my.conf
+#COPY nginx.conf /etc/nginx/conf.d/my.conf
 
 # Ensure we're root for setup operations
 USER root
