@@ -8,10 +8,12 @@ FROM owasp/modsecurity-crs:nginx-alpine
 ENV PROXY_UPSTREAM_HOST=spring-boot-service:8080
 
 # Remove default templates to prevent them from creating unwanted server blocks
-RUN rm -rf /etc/nginx/templates/*
+# Use || true to ignore errors if directory doesn't exist
+RUN rm -rf /etc/nginx/templates/* 2>/dev/null || true
 
-# Copy our custom Nginx configuration as a template
+# Ensure templates directory exists and copy our custom Nginx configuration as a template
 # The base image's entrypoint will process this template with envsubst
+RUN mkdir -p /etc/nginx/templates
 COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 
 # Ensure we're root for setup operations
