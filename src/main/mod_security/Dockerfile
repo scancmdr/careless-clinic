@@ -7,11 +7,10 @@ FROM owasp/modsecurity-crs:nginx-alpine
 # We assume the Spring Boot application listens on port 8080 internally.
 ENV PROXY_UPSTREAM_HOST=spring-boot-service:8080
 
-# Configure the base image to listen on port 80 instead of 8080
-# and disable SSL (8443)
-ENV PORT=80
-ENV PORT_SSL=443
-ENV SSL_PORT=443
+# Use the default unprivileged ports (8080 for HTTP, 8443 for HTTPS)
+# The base image runs as unprivileged user and cannot bind to ports below 1024
+ENV PORT=8080
+ENV SSL_PORT=8443
 
 # The base image uses environment variables to configure ModSecurity
 # The base image processes templates in /etc/nginx/templates/ and outputs to /etc/nginx/conf.d/
@@ -29,8 +28,8 @@ USER root
 RUN mkdir -p /var/lib/nginx /var/log/nginx && \
     chown -R nginx:nginx /var/lib/nginx /var/log/nginx /etc/nginx
 
-# Nginx with ModSecurity is now listening on port 80
-EXPOSE 80
+# Nginx with ModSecurity is now listening on port 8080 (unprivileged)
+EXPOSE 8080
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
