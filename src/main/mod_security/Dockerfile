@@ -7,12 +7,12 @@ FROM owasp/modsecurity-crs:nginx-alpine
 # We assume the Spring Boot application listens on port 8080 internally.
 ENV PROXY_UPSTREAM_HOST=spring-boot-service:8080
 
-# Remove the default Nginx configuration file
-RUN rm /etc/nginx/nginx.conf
+# Remove default templates to prevent them from creating unwanted server blocks
+RUN rm -rf /etc/nginx/templates/*
 
-# Copy our custom Nginx configuration file
-# This file will enable ModSecurity and proxy traffic to the Spring Boot app.
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy our custom Nginx configuration as a template
+# The base image's entrypoint will process this template with envsubst
+COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 
 # Ensure we're root for setup operations
 USER root
