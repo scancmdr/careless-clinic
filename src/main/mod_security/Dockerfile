@@ -7,6 +7,12 @@ FROM owasp/modsecurity-crs:nginx-alpine
 # We assume the Spring Boot application listens on port 8080 internally.
 ENV PROXY_UPSTREAM_HOST=spring-boot-service:8080
 
+# Configure the base image to listen on port 80 instead of 8080
+# and disable SSL (8443)
+ENV PORT=80
+ENV PORT_SSL=443
+ENV SSL_PORT=443
+
 # The base image uses environment variables to configure ModSecurity
 # The base image processes templates in /etc/nginx/templates/ and outputs to /etc/nginx/conf.d/
 # Remove any default templates that might conflict
