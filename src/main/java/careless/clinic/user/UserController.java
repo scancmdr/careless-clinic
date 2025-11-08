@@ -19,16 +19,6 @@ public class UserController {
         return "public/one";
     }
 
-    @GetMapping("/page-two")
-    public String pageTwo(Model model) {
-        // In production with real OAuth2 credentials, the SecurityFilterChain
-        // will ensure only authenticated users can access this page
-        model.addAttribute("name", "Test User");
-        model.addAttribute("email", "test@example.com");
-        model.addAttribute("picture", "https://via.placeholder.com/150");
-        return "page-two";
-    }
-
     @GetMapping("/login")
     public String login() {
         return "login";
