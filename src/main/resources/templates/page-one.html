@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Text Entry - Careless Health Clinic</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+          integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+          rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 5px solid #a93226;
+        }
+
+        .clinic-name {
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .navigation {
+            background: #34495e;
+            padding: 0;
+        }
+
+        .navigation .pure-menu-list {
+            display: flex;
+            justify-content: center;
+        }
+
+        .navigation .pure-menu-link {
+            color: white;
+            padding: 1rem 1.5rem;
+            transition: background 0.3s;
+        }
+
+        .navigation .pure-menu-link:hover {
+            background: #2c3e50;
+        }
+
+        .main-content {
+            padding: 3rem 2rem;
+        }
+
+        .page-header {
+            color: #2c3e50;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            background: #ecf0f1;
+            border-left: 5px solid #e74c3c;
+            padding: 2rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            color: #e74c3c;
+            margin-top: 0;
+        }
+
+        .submit-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-button:hover {
+            background: #c0392b;
+        }
+
+        .table-section {
+            margin-top: 2rem;
+        }
+
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .entries-table thead {
+            background: #34495e;
+            color: white;
+        }
+
+        .entries-table th,
+        .entries-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .entries-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .no-entries {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .warning-banner {
+            background: #f39c12;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 3px solid #e67e22;
+        }
+
+        .input-text {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .input-text:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+
+        .delete-button {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .delete-button:hover {
+            background: #a93226;
+        }
+
+        .text-link {
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .text-link:hover {
+            color: #2980b9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #ecf0f1;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #2c3e50;
+        }
+
+        .sql-injection-pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #2c3e50;
+            margin: 0.5rem 0;
+            display: inline-block;
+            max-width: 85%;
+            vertical-align: top;
+        }
+
+        .copy-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .copy-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .copy-button:hover {
+            background: #2980b9;
+        }
+
+        .copy-button.copied {
+            background: #27ae60;
+        }
+
+        .copy-button.copied::after {
+            content: 'Copied!';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #27ae60;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Warning Banner -->
+    <div class="warning-banner">
+        Security Demonstration - Intentionally Vulnerable Application
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1 class="clinic-name">Careless Health Clinic</h1>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <nav class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-selected">
+                    Page One
+                </li>
+                <li class="pure-menu-item">
+                    <a class="pure-menu-link" href="#" th:href="@{/page-two}">Page Two</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h2 class="page-header">This is Page One</h2>
+
+        <!-- Input Form -->
+        <div class="form-section">
+            <h3>Submit New Entry</h3>
+            <form class="pure-form" method="post" th:action="@{/page-one/submit}">
+                <input class="input-text"
+                       name="text"
+                       placeholder="Enter your text here..."
+                       required
+                       type="text">
+                <button class="submit-button" type="submit">Submit</button>
+            </form>
+        </div>
+
+        <!-- Entries Table -->
+        <div class="table-section">
+            <h3>Submitted Entries</h3>
+            <table class="entries-table" th:if="${not #lists.isEmpty(entries)}">
+                <thead>
+                <tr>
+                    <th>Text</th>
+                    <th>Submitted At</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="entry : ${entries}">
+                    <td>
+                        <span th:if="${#strings.length(entry.content) <= 60}" th:text="${entry.content}"></span>
+                        <span th:if="${#strings.length(entry.content) > 60}">
+                                    <a class="text-link"
+                                       href="#"
+                                       onclick="openModalFromLink(this); return false;"
+                                       th:data-content="${entry.content}"
+                                       th:data-title="${entry.title}"
+                                       th:text="${#strings.substring(entry.content, 0, 60) + '...'}"></a>
+                                </span>
+                    </td>
+                    <td th:text="${#temporals.format(entry.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td>
+                        <form method="post" style="display: inline;" th:action="@{/page-one/delete}">
+                            <input name="id" th:value="${entry.id}" type="hidden">
+                            <button class="delete-button" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="no-entries" th:if="${#lists.isEmpty(entries)}">
+                No entries yet. Submit your first text above!
+            </div>
+        </div>
+        <hr/>
+        <div class="page-footer">
+            <p>
+                To demostrate SQL injection, copy & paste the following SQL query into the input above:
+            <div class="copy-container">
+                <pre class="sql-injection-pre" id="sqlInjection">','2025-11-08 09:00:54.482','2025-11-08 09:00:54.482'); INSERT INTO text_entries (content, created_at, updated_at) VALUES ( (select COALESCE(STRING_AGG(content,','),'NONE') from text_entries),'2025-11-08 09:00:54.482','2025-11-08 09:00:54.482'); --</pre>
+                <button class="copy-button" onclick="copySqlInjection()">Copy</button>
+            </div>
+
+            This will insert a single entry with the contents of all previous entries.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Educational Purpose Only</strong> - This application is intentionally insecure</p>
+        <p>Careless Health Clinic - Teaching security through terrible examples</p>
+    </div>
+</div>
+
+<!-- Modal Dialog -->
+<div class="modal" id="textModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Entry Details</h2>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <pre class="modal-pre" id="modalText"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(title, content) {
+        document.getElementById('modalTitle').textContent = title || 'Entry Details';
+        document.getElementById('modalText').textContent = content || '';
+        document.getElementById('textModal').style.display = 'block';
+    }
+
+    function openModalFromLink(element) {
+        var title = element.getAttribute('data-title');
+        var content = element.getAttribute('data-content');
+        openModal(title, content);
+    }
+
+    function closeModal() {
+        document.getElementById('textModal').style.display = 'none';
+    }
+
+    function copySqlInjection() {
+        var preElement = document.getElementById('sqlInjection');
+        var text = preElement.textContent;
+        var button = event.target;
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(text).then(function () {
+            // Add 'copied' class to show visual feedback
+            button.classList.add('copied');
+            button.textContent = 'Copied!';
+
+            // Remove the class after 2 seconds
+            setTimeout(function () {
+                button.classList.remove('copied');
+                button.textContent = 'Copy';
+            }, 2000);
+        }).catch(function (err) {
+            console.error('Failed to copy text: ', err);
+        });
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function (event) {
+        var modal = document.getElementById('textModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+</script>
+</body>
+</html>
