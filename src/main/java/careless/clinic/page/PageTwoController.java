@@ -41,7 +41,7 @@ public class PageTwoController {
      * @return view name "page-two"
      */
     @GetMapping()
-    public String pageOne(Model model) {
+    public String pageTwo(Model model) {
         model.addAttribute("entries", getAllEntries());
         return "page-two";
     }

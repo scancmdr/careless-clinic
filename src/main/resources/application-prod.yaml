@@ -84,10 +84,10 @@ management:
 # Production logging configuration
 logging:
   level:
-    careless.clinic: ${LOG_LEVEL:INFO}
-    org.springframework.jdbc.core: ${JDBC_LOG_LEVEL:INFO}
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:INFO}
+    careless.clinic: ${LOG_LEVEL:DEBUG}
+    org.springframework.jdbc.core: ${JDBC_LOG_LEVEL:DEBUG}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:DEBUG}
     org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_BINDER_LOG_LEVEL:WARN}
-    org.springframework.security: INFO
+    org.springframework.security: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
