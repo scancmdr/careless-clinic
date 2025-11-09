@@ -11,6 +11,11 @@ import java.util.Collections;
 @Slf4j
 @Component
 public class RequestHeaderLoggerFilter implements Filter {
+
+    public RequestHeaderLoggerFilter() {
+        log.info("RequestHeaderLoggerFilter initialized");
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
