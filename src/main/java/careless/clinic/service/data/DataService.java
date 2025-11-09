@@ -14,6 +14,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service providing both JPA and JDBC access to {@link TextEntry} data.
+ * <p>
+ * WARNING: Contains intentionally vulnerable raw SQL methods for educational purposes.
+ *
+ * @author jay
+ * @see TextEntry
+ * @see TextEntryRepository
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,27 +33,55 @@ public class DataService {
 
     // ==================== JPA Repository Methods ====================
 
+    /**
+     * Saves entry using JPA repository.
+     *
+     * @param entry text entry to save
+     * @return saved text entry
+     */
     @Transactional
     public TextEntry saveEntry(TextEntry entry) {
         log.debug("Saving TextEntry via JPA: {}", entry);
         return textEntryRepository.save(entry);
     }
 
+    /**
+     * Finds entry by ID using JPA repository.
+     *
+     * @param id entry ID
+     * @return optional containing entry if found
+     */
     public Optional<TextEntry> findById(Long id) {
         log.debug("Finding TextEntry by id via JPA: {}", id);
         return textEntryRepository.findById(id);
     }
 
+    /**
+     * Retrieves all entries using JPA repository.
+     *
+     * @return list of all entries
+     */
     public List<TextEntry> findAll() {
         log.debug("Finding all TextEntries via JPA");
         return textEntryRepository.findAll();
     }
 
+    /**
+     * Searches entries by title or content using JPA repository.
+     *
+     * @param searchTerm search term
+     * @return matching entries
+     */
     public List<TextEntry> searchByTitleOrContent(String searchTerm) {
         log.debug("Searching TextEntries by title or content via JPA: {}", searchTerm);
         return textEntryRepository.searchByTitleOrContent(searchTerm);
     }
 
+    /**
+     * Deletes entry by ID using JPA repository.
+     *
+     * @param id entry ID to delete
+     */
     @Transactional
     public void deleteById(Long id) {
         log.debug("Deleting TextEntry by id via JPA: {}", id);
@@ -53,6 +90,12 @@ public class DataService {
 
     // ==================== Direct JDBC Methods ====================
 
+    /**
+     * Saves entry using JDBC template with prepared statements.
+     *
+     * @param entry text entry to save
+     * @return saved text entry with ID
+     */
     public TextEntry saveEntryViaJdbc(TextEntry entry) {
         log.debug("Saving TextEntry via JDBC: {}", entry);
 
@@ -80,6 +123,12 @@ public class DataService {
         return entry;
     }
 
+    /**
+     * Finds entry by ID using JDBC template.
+     *
+     * @param id entry ID
+     * @return optional containing entry if found
+     */
     public Optional<TextEntry> findByIdViaJdbc(Long id) {
         log.debug("Finding TextEntry by id via JDBC: {}", id);
 
@@ -90,6 +139,11 @@ public class DataService {
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
+    /**
+     * Retrieves all entries using JDBC template.
+     *
+     * @return list of all entries
+     */
     public List<TextEntry> findAllViaJdbc() {
         log.debug("Finding all TextEntries via JDBC");
 
@@ -98,6 +152,12 @@ public class DataService {
         return jdbcTemplate.query(sql, new TextEntryRowMapper());
     }
 
+    /**
+     * Searches entries by title or content using JDBC template.
+     *
+     * @param searchTerm search term
+     * @return matching entries
+     */
     public List<TextEntry> searchByTitleOrContentViaJdbc(String searchTerm) {
         log.debug("Searching TextEntries by title or content via JDBC: {}", searchTerm);
 
@@ -109,6 +169,12 @@ public class DataService {
         return jdbcTemplate.query(sql, new TextEntryRowMapper(), likePattern, likePattern);
     }
 
+    /**
+     * Deletes entry by ID using JDBC template.
+     *
+     * @param id entry ID to delete
+     * @return number of rows affected
+     */
     public int deleteByIdViaJdbc(Long id) {
         log.debug("Deleting TextEntry by id via JDBC: {}", id);
 
@@ -122,8 +188,12 @@ public class DataService {
     // They accept unsanitized SQL and should NEVER be used in production
 
     /**
-     * Execute raw SQL query returning TextEntry objects - USE WITH CAUTION
-     * This method is intentionally vulnerable for educational purposes
+     * Executes raw SQL query returning {@link TextEntry} objects.
+     * <p>
+     * WARNING: Intentionally vulnerable to SQL injection for educational purposes.
+     *
+     * @param sqlQuery unsanitized SQL query
+     * @return list of text entries
      */
     public List<TextEntry> executeRawQuery(String sqlQuery) {
         log.warn("Executing raw SQL query: {}", sqlQuery);
@@ -132,8 +202,12 @@ public class DataService {
     }
 
     /**
-     * Execute raw SQL query returning a list of maps - USE WITH CAUTION
-     * Each map represents a row with column names as keys
+     * Executes raw SQL query returning list of maps.
+     * <p>
+     * WARNING: Intentionally vulnerable to SQL injection for educational purposes.
+     *
+     * @param sqlQuery unsanitized SQL query
+     * @return list of maps (column name to value)
      */
     public List<java.util.Map<String, Object>> executeRawQueryForMaps(String sqlQuery) {
         log.warn("Executing raw SQL query for maps: {}", sqlQuery);
@@ -142,8 +216,12 @@ public class DataService {
     }
 
     /**
-     * Execute raw SQL query returning a single map - USE WITH CAUTION
-     * Returns null if no results found
+     * Executes raw SQL query returning single map.
+     * <p>
+     * WARNING: Intentionally vulnerable to SQL injection for educational purposes.
+     *
+     * @param sqlQuery unsanitized SQL query
+     * @return map of column name to value, or null if no results
      */
     public java.util.Map<String, Object> executeRawQueryForMap(String sqlQuery) {
         log.warn("Executing raw SQL query for single map: {}", sqlQuery);
@@ -157,8 +235,14 @@ public class DataService {
     }
 
     /**
-     * Execute raw SQL query returning a single value - USE WITH CAUTION
-     * Useful for COUNT, SUM, MAX, etc.
+     * Executes raw SQL query returning single value.
+     * <p>
+     * WARNING: Intentionally vulnerable to SQL injection for educational purposes.
+     *
+     * @param <T> return type
+     * @param sqlQuery unsanitized SQL query
+     * @param requiredType class of return type
+     * @return query result, or null if no results
      */
     public <T> T executeRawQueryForObject(String sqlQuery, Class<T> requiredType) {
         log.warn("Executing raw SQL query for object: {}", sqlQuery);
@@ -172,8 +256,12 @@ public class DataService {
     }
 
     /**
-     * Execute raw SQL update/insert/delete statement - USE WITH CAUTION
-     * Returns the number of rows affected
+     * Executes raw SQL update/insert/delete statement.
+     * <p>
+     * WARNING: Intentionally vulnerable to SQL injection for educational purposes.
+     *
+     * @param sqlStatement unsanitized SQL statement
+     * @return number of rows affected
      */
     public int executeRawUpdate(String sqlStatement) {
         log.warn("Executing raw SQL update: {}", sqlStatement);
@@ -182,9 +270,13 @@ public class DataService {
     }
 
     /**
-     * Execute raw SQL statement (any type) - USE WITH CAUTION
-     * This is the most dangerous method - executes any SQL without validation
-     * Returns true if the statement returns a result set, false otherwise
+     * Executes raw SQL statement of any type.
+     * <p>
+     * WARNING: Most dangerous method - executes any SQL without validation.
+     * Intentionally vulnerable for educational purposes.
+     *
+     * @param sqlStatement unsanitized SQL statement
+     * @return true if statement returns result set, false otherwise
      */
     public boolean executeRawStatement(String sqlStatement) {
         log.warn("Executing raw SQL statement: {}", sqlStatement);
@@ -197,8 +289,12 @@ public class DataService {
     }
 
     /**
-     * Execute multiple raw SQL statements separated by semicolons - USE WITH CAUTION
-     * Returns the number of statements executed
+     * Executes multiple raw SQL statements (semicolon-separated).
+     * <p>
+     * WARNING: Intentionally vulnerable to SQL injection for educational purposes.
+     *
+     * @param sqlStatements unsanitized SQL statements
+     * @return number of statements executed
      */
     public int executeBatchRawStatements(String sqlStatements) {
         log.warn("Executing batch raw SQL statements: {}", sqlStatements);
@@ -219,6 +315,11 @@ public class DataService {
 
     // ==================== Row Mapper ====================
 
+    /**
+     * Row mapper for converting {@link ResultSet} to {@link TextEntry}.
+     *
+     * @author jay
+     */
     private static class TextEntryRowMapper implements RowMapper<TextEntry> {
         @Override
         public TextEntry mapRow(ResultSet rs, int rowNum) throws SQLException {

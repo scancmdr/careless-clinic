@@ -19,6 +19,14 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.beans.factory.annotation.Value;
 
+/**
+ * Spring Security configuration with dual {@link SecurityFilterChain} setup.
+ * <p>
+ * Configures public routes (page-one) and OAuth2-protected routes (page-two).
+ *
+ * @author jay
+ * @see SecurityFilterChain
+ */
 @Slf4j
 @Configuration
 @EnableWebSecurity
@@ -30,6 +38,9 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
 
+    /**
+     * Post-construction initialization logging.
+     */
     @PostConstruct
     public void init() {
         log.info("===> SecurityConfig manually initialized! <===");
@@ -37,8 +48,13 @@ public class SecurityConfig {
     }
 
     /**
-     * Public SecurityFilterChain - NO OAuth2Login
-     * Order 1 means this is evaluated first
+     * Configures public {@link SecurityFilterChain} without OAuth2 login.
+     * <p>
+     * Evaluated first (Order 1) for public routes.
+     *
+     * @param http Spring Security HTTP configuration
+     * @return configured security filter chain
+     * @throws Exception if configuration fails
      */
     @Bean
     @Order(1)
@@ -57,8 +73,13 @@ public class SecurityConfig {
     }
 
     /**
-     * Protected SecurityFilterChain - OAuth2Login enabled
-     * Order 2 means this is evaluated after the public chain - we would invert this order for a production arrangement
+     * Configures protected {@link SecurityFilterChain} with OAuth2 login.
+     * <p>
+     * Evaluated second (Order 2) for protected routes requiring authentication.
+     *
+     * @param http Spring Security HTTP configuration
+     * @return configured security filter chain
+     * @throws Exception if configuration fails
      */
     @Bean
     @Order(2)
@@ -83,7 +104,9 @@ public class SecurityConfig {
     }
 
     /**
-     * Manually configure OAuth2 client registration
+     * Creates OAuth2 {@link ClientRegistrationRepository} for Google authentication.
+     *
+     * @return in-memory client registration repository
      */
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
@@ -91,6 +114,11 @@ public class SecurityConfig {
         return new InMemoryClientRegistrationRepository(googleClientRegistration());
     }
 
+    /**
+     * Builds Google {@link ClientRegistration} from configuration properties.
+     *
+     * @return configured Google client registration
+     */
     private ClientRegistration googleClientRegistration() {
         return ClientRegistration.withRegistrationId("google")
                 .clientId(clientId)
@@ -108,6 +136,11 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Provides default {@link OAuth2UserService} for loading user info.
+     *
+     * @return default OAuth2 user service
+     */
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
         return new DefaultOAuth2UserService();

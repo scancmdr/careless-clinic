@@ -14,22 +14,44 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
+/**
+ * Utility class providing helper methods for exception handling, timestamps, and JWT validation.
+ *
+ * @author jay
+ */
 @Slf4j
 public class Tools {
+    /**
+     * Converts exception stack trace to string.
+     *
+     * @param e exception to convert
+     * @return stack trace as string
+     */
     public static String getStackTraceAsString(Exception e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         return sw.toString();
     }
 
+    /** Date-time formatter for timestamps */
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    /**
+     * Returns current timestamp as formatted string.
+     *
+     * @return current time in format "yyyy-MM-dd HH:mm:ss.SSS"
+     */
     public static String now() {
         return Timestamp.valueOf(LocalDateTime.now()).toLocalDateTime().format(formatter);
     }
 
     /**
-     * Validates a JWT token against both public keys.
-     * Returns true if the signature is valid with either key.
+     * Validates JWT token signature against both public keys.
+     * <p>
+     * Returns true if signature is valid with either {@link #PUBLIC_KEY} or {@link #JAY_PUBLIC_KEY}.
+     *
+     * @param token JWT token to validate
+     * @return true if signature is valid, false otherwise
      */
     public static boolean validateJwtSignature(String token) {
         if (token == null || token.isBlank()) {
@@ -52,6 +74,13 @@ public class Tools {
         return false;
     }
 
+    /**
+     * Validates JWT token with specific public key.
+     *
+     * @param token JWT token
+     * @param publicKeyPem PEM-encoded public key
+     * @return true if valid, false otherwise
+     */
     private static boolean validateJwtWithKey(String token, String publicKeyPem) {
         try {
             PublicKey publicKey = loadPublicKey(publicKeyPem);
@@ -72,6 +101,13 @@ public class Tools {
         }
     }
 
+    /**
+     * Loads public key from PEM string.
+     *
+     * @param publicKeyPem PEM-encoded public key
+     * @return loaded public key
+     * @throws Exception if key loading fails
+     */
     private static PublicKey loadPublicKey(String publicKeyPem) throws Exception {
         String publicKeyContent = publicKeyPem
                 .replace("-----BEGIN PUBLIC KEY-----", "")
@@ -84,13 +120,15 @@ public class Tools {
         return keyFactory.generatePublic(spec);
     }
 
-    // ES256
+    /** ES256 public key for JWT validation */
     public static final String PUBLIC_KEY = """
             -----BEGIN PUBLIC KEY-----
             MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEMU1JFVEO9FkVr0r041GpAWzKvQi1TBYm
             arJj3+aNeC2aK9GT7Hct1OJGWQGbUkNWTeUr+Ui09PjBit+AMYuHgA==
             -----END PUBLIC KEY-----
             """;
+
+    /** Jay's ES256 public key for JWT validation */
     public static final String JAY_PUBLIC_KEY = """
             -----BEGIN PUBLIC KEY-----
             MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdYCSYzUHlSjrjT8ZwHCs54M07C9F

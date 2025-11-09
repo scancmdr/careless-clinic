@@ -17,6 +17,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for page two with SQL injection demonstration and JWT validation.
+ * <p>
+ * WARNING: Contains insecure code for educational purposes only.
+ *
+ * @author jay
+ * @see TextEntry
+ * @see Tools#validateJwtSignature(String)
+ */
 @Slf4j
 @Controller
 @RequestMapping("/page-two")
@@ -25,12 +34,24 @@ public class PageTwoController {
     @Autowired
     private DataSource dataSource;
 
+    /**
+     * Displays page two with all text entries and JWT validation.
+     *
+     * @param model Spring MVC model
+     * @return view name "page-two"
+     */
     @GetMapping()
     public String pageOne(Model model) {
         model.addAttribute("entries", getAllEntries());
         return "page-two";
     }
 
+    /**
+     * Handles text submission via SQL injection vulnerable method.
+     *
+     * @param text user-submitted text
+     * @return redirect to /page-two
+     */
     @PostMapping("/submit")
     public String submitText(@RequestParam("text") String text) {
         try {
@@ -42,12 +63,24 @@ public class PageTwoController {
         return "redirect:/page-two";
     }
 
+    /**
+     * Deletes an entry by ID.
+     *
+     * @param id entry ID to delete
+     * @return redirect to /page-two
+     */
     @PostMapping("/delete")
     public String deleteEntry(@RequestParam("id") Long id) {
         deleteById(id);
         return "redirect:/page-two";
     }
 
+    /**
+     * Saves text using vulnerable string concatenation (SQL injection risk).
+     *
+     * @param text user-submitted text
+     * @throws Exception if save fails
+     */
     private void save(String text) throws Exception {
         String ts = Tools.now();
         String sql = "INSERT INTO text_entries (content, created_at, updated_at) VALUES ('" + text + "', '" + ts + "', '" + ts + "')";
@@ -58,6 +91,12 @@ public class PageTwoController {
         }
     }
 
+    /**
+     * Saves text securely using prepared statements.
+     *
+     * @param title entry title
+     * @param content entry content
+     */
     private void safeSave(String title, String content) {
         String sql = "INSERT INTO text_entries (title, content, created_at, updated_at) VALUES (?, ?, ?, ?)";
 
@@ -75,6 +114,11 @@ public class PageTwoController {
         }
     }
 
+    /**
+     * Retrieves all text entries and validates JWT tokens.
+     *
+     * @return list of all {@link TextEntry} objects with JWT validation
+     */
     private List<TextEntry> getAllEntries() {
         List<TextEntry> entries = new ArrayList<>();
         String sql = "SELECT id, title, content, created_at, updated_at FROM text_entries ORDER BY created_at DESC";
@@ -110,6 +154,9 @@ public class PageTwoController {
         return entries;
     }
 
+    /**
+     * Creates the text_entries table if it doesn't exist.
+     */
     private void createTableIfNotExists() {
         String sql = "CREATE TABLE IF NOT EXISTS text_entries (" +
                 "id SERIAL PRIMARY KEY, " +
@@ -128,6 +175,11 @@ public class PageTwoController {
         }
     }
 
+    /**
+     * Deletes a text entry by ID using prepared statement.
+     *
+     * @param id entry ID to delete
+     */
     private void deleteById(Long id) {
         String sql = "DELETE FROM text_entries WHERE id = ?";
 
