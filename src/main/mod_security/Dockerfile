@@ -28,7 +28,7 @@ COPY proxy_backend.conf.template /etc/nginx/templates/includes/proxy_backend.con
 COPY modsecurity.conf /etc/nginx/conf.d/modsecurity.conf
 
 RUN rm -rf /etc/modsecurity.d/setup.conf
-COPY setup.conf /etc/modsecurity.d/setup.conf
+COPY setup.conf /etc/modsecurity.d/jay-setup.conf
 RUN cat /etc/modsecurity.d/setup.conf
 
 # Ensure we're root for setup operations
