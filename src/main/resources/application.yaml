@@ -51,6 +51,7 @@ server:
     port-header: X-Forwarded-Port
     # Trust all proxies for development
     internal-proxies: .*
+    redirect-context-root: false
 
 # Logging configuration
 
