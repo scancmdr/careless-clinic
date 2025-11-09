@@ -87,7 +87,7 @@ public class SecurityConfig {
         log.info("===> Configuring PROTECTED SecurityFilterChain with OAuth2 <===");
 
         return http
-                .securityMatcher("/page-two", "/page-three", "/protected/**", "/private/**",
+                .securityMatcher("/page-two", "/protected/**", "/private/**",
                                 "/oauth2/**", "/login/oauth2/**")
                 .authorizeHttpRequests(authorize -> {
                     log.info("PROTECTED chain: Configuring authorization rules");

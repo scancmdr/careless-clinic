@@ -42,6 +42,8 @@ spring:
 server:
   port: ${PORT:8080}
   forward-headers-strategy: framework
+  tomcat:
+    use-relative-redirects: true
 
 # Logging configuration
 

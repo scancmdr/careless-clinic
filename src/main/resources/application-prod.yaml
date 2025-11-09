@@ -52,6 +52,7 @@ server:
   shutdown: graceful
   tomcat:
     connection-timeout: 20s
+    use-relative-redirects: true
 
 # Actuator configuration for health checks (required by Dokploy)
 management:
