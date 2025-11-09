@@ -22,16 +22,20 @@ RUN rm -f /etc/nginx/templates/*.template 2>/dev/null || true
 # Updated: 2025-11-09 v1.0.26 - Override proxy_backend.conf to fix headers
 COPY nginx.conf /etc/nginx/templates/proxy.conf.template
 
+# override this secret file
+RUN mkdir -p /etc/nginx/includes
+COPY proxy_backend.conf.template /etc/nginx/templates/includes/proxy_backend.conf.template
+
 # Ensure we're root for setup operations
 USER root
 
 # Override the default proxy_backend.conf that sets wrong X-Forwarded headers
 # This file is included by the base image and overrides our settings
-RUN mkdir -p /etc/nginx/includes && \
-    echo '# Custom proxy headers - always use external HTTPS values' > /etc/nginx/includes/proxy_backend.conf && \
-    echo 'proxy_set_header X-Forwarded-Proto "https";' >> /etc/nginx/includes/proxy_backend.conf && \
-    echo 'proxy_set_header X-Forwarded-Port "443";' >> /etc/nginx/includes/proxy_backend.conf && \
-    echo 'proxy_set_header X-Forwarded-Host $host;' >> /etc/nginx/includes/proxy_backend.conf
+#RUN mkdir -p /etc/nginx/includes && \
+#    echo '# Custom proxy headers - always use external HTTPS values' > /etc/nginx/includes/proxy_backend.conf && \
+#    echo 'proxy_set_header X-Forwarded-Proto "https";' >> /etc/nginx/includes/proxy_backend.conf && \
+#    echo 'proxy_set_header X-Forwarded-Port "443";' >> /etc/nginx/includes/proxy_backend.conf && \
+#    echo 'proxy_set_header X-Forwarded-Host $host;' >> /etc/nginx/includes/proxy_backend.conf
 
 # Create necessary directories and set permissions
 RUN mkdir -p /var/lib/nginx /var/log/nginx && \
