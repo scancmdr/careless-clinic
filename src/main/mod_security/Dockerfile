@@ -25,7 +25,7 @@ COPY nginx.conf /etc/nginx/templates/proxy.conf.template
 # override this secret file
 RUN mkdir -p /etc/nginx/includes
 COPY proxy_backend.conf.template /etc/nginx/templates/includes/proxy_backend.conf.template
-COPY modsecurity.conf /etc/nginx/conf.d/modsecurity.conf
+COPY modsecurity.conf.template /etc/nginx/templates/conf.d/modsecurity.conf.template
 
 RUN rm -rf /etc/modsecurity.d/setup.conf
 COPY setup.conf /etc/modsecurity.d/jay-setup.conf
