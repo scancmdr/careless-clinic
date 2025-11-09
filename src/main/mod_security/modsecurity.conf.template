@@ -1,4 +1,4 @@
 # customized for page-one & page-two
 # file: conf.d/modsecurity.conf
-#modsecurity on;
+modsecurity on;
 modsecurity_rules_file /etc/modsecurity.d/jay-setup.conf;
