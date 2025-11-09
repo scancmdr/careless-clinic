@@ -48,11 +48,18 @@ spring:
 # Production server configuration
 server:
   port: ${PORT:8080}
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
   shutdown: graceful
   tomcat:
     connection-timeout: 20s
     use-relative-redirects: true
+    # Explicitly configure Tomcat's RemoteIpValve to trust proxy headers
+    protocol-header: X-Forwarded-Proto
+    protocol-header-https-value: https
+    remote-ip-header: X-Forwarded-For
+    port-header: X-Forwarded-Port
+    # Trust all proxies (since we're behind Traefik and nginx)
+    internal-proxies: .*
 
 # Actuator configuration for health checks (required by Dokploy)
 management:

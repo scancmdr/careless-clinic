@@ -41,9 +41,16 @@ spring:
 # Server configuration
 server:
   port: ${PORT:8080}
-  forward-headers-strategy: framework
+  forward-headers-strategy: native
   tomcat:
     use-relative-redirects: true
+    # Explicitly configure Tomcat's RemoteIpValve to trust proxy headers
+    protocol-header: X-Forwarded-Proto
+    protocol-header-https-value: https
+    remote-ip-header: X-Forwarded-For
+    port-header: X-Forwarded-Port
+    # Trust all proxies for development
+    internal-proxies: .*
 
 # Logging configuration
 
