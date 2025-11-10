@@ -21,6 +21,11 @@ public class UserController {
         return "index";
     }
 
+    @GetMapping
+    public String index1() {
+        return "index";
+    }
+
     /**
      * Displays public page one.
      *
