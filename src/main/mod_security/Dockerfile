@@ -28,6 +28,8 @@ COPY proxy_backend.conf.template /etc/nginx/templates/includes/proxy_backend.con
 COPY modsecurity.conf.template /etc/nginx/templates/conf.d/modsecurity.conf.template
 
 RUN rm -rf /etc/modsecurity.d/setup.conf
+# conflicts with Google Auth
+RUN rm -rf /opt/owasp-crs/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf
 COPY setup.conf /etc/modsecurity.d/jay-setup.conf
 
 # Ensure we're root for setup operations
