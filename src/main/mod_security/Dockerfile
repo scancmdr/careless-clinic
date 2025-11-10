@@ -20,7 +20,7 @@ RUN rm -f /etc/nginx/templates/*.template 2>/dev/null || true
 # Copy our custom server configuration as a template
 # The entrypoint will process this with envsubst and place it in /etc/nginx/conf.d/
 # Updated: 2025-11-09 v1.0.26 - Override proxy_backend.conf to fix headers
-COPY nginx.conf /etc/nginx/templates/proxy.conf.template
+COPY nginx.conf /etc/nginx/templates/conf.d/proxy.conf.template
 
 # override this secret file
 RUN mkdir -p /etc/nginx/includes
