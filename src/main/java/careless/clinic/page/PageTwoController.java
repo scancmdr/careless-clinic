@@ -57,7 +57,11 @@ public class PageTwoController {
         try {
             save(text);
         } catch (Exception e) {
-            safeSave(e.getMessage(), Tools.getStackTraceAsString(e));
+            safeSave("error",
+                    "This form controller is intentionally insecure. If you see this message you posted text "
+                            +"that mangled the construction of the SQL insert statement, and the CRS anomaly score likely "
+                            +"wasn't high enough to trigger a block."
+                            +" error was:"+e.getMessage()); //Tools.getStackTraceAsString(e));
             log.error("error saving text entry", e);
         }
         return "redirect:/page-two";
