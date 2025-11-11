@@ -62,7 +62,7 @@ public class SecurityConfig {
         log.info("===> Configuring PUBLIC SecurityFilterChain <===");
 
         return http
-                .securityMatcher("/", "/index", "/index.html", "/page-one", "/public/**",
+                .securityMatcher("/", "/index", "/index.html", "/page-one", "/public/**", "/page-two",
                                "/css/**", "/js/**", "/images/**", "/error", "/favicon.ico")
                 .authorizeHttpRequests(authorize -> {
                     log.info("PUBLIC chain: Configuring permitAll() for all requests");
@@ -87,7 +87,7 @@ public class SecurityConfig {
         log.info("===> Configuring PROTECTED SecurityFilterChain with OAuth2 <===");
 
         return http
-                .securityMatcher("/page-two", "/protected/**", "/private/**",
+                .securityMatcher( "/protected/**", "/private/**",
                                 "/oauth2/**", "/login/oauth2/**")
                 .authorizeHttpRequests(authorize -> {
                     log.info("PROTECTED chain: Configuring authorization rules");

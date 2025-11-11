@@ -1,8 +1,12 @@
 package careless.util;
 
+import careless.clinic.CarelessClinicApplication;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,6 +26,33 @@ import java.util.Base64;
 @Slf4j
 public class Tools {
     /**
+     * ES256 public key for JWT validation
+     */
+    public static final String PUBLIC_KEY_BAD = """
+            -----BEGIN PUBLIC KEY-----
+            MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEMU1JFVEO9FkVr0r041GpAWzKvQi1TBYm
+            arJj3+aNeC2aK9GT7Hct1OJGWQGbUkNWTeUr+Ui09PjBit+AMYuHgA==
+            -----END PUBLIC KEY-----
+            """;
+    public static final String PUBLIC_KEY = """
+            -----BEGIN PUBLIC KEY-----
+            MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEMU1JFVEO9FkVr0r041GpAWzKvQi1TBYmarJj3+aNeC2aK9GT7Hct1OJGWQGbUkNWTeUr+Ui09PjBit+AMYuHgA==
+            -----END PUBLIC KEY-----
+            """;
+    /**
+     * Jay's ES256 public key for JWT validation
+     */
+    public static final String JAY_PUBLIC_KEY = """
+            -----BEGIN PUBLIC KEY-----
+            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdYCSYzUHlSjrjT8ZwHCs54M07C9FvU315fz5Ha/pR2ij89LRm+XMVXBwzpLL4XtspW4GhQA24hNiDdCYa2FV5g==
+            -----END PUBLIC KEY-----
+            """;
+    /**
+     * Date-time formatter for timestamps
+     */
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    /**
      * Converts exception stack trace to string.
      *
      * @param e exception to convert
@@ -32,9 +63,6 @@ public class Tools {
         e.printStackTrace(new PrintWriter(sw));
         return sw.toString();
     }
-
-    /** Date-time formatter for timestamps */
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * Returns current timestamp as formatted string.
@@ -77,7 +105,7 @@ public class Tools {
     /**
      * Validates JWT token with specific public key.
      *
-     * @param token JWT token
+     * @param token        JWT token
      * @param publicKeyPem PEM-encoded public key
      * @return true if valid, false otherwise
      */
@@ -93,12 +121,47 @@ public class Tools {
 
             return true;
         } catch (SignatureException e) {
+            boolean tryK1 = validateJwtWithSecp256k1Key(token, publicKeyPem);
+            if (tryK1) {
+                return true;
+            }
             log.debug("Signature validation failed: {}", e.getMessage());
             return false;
         } catch (Exception e) {
             log.debug("JWT validation error: {}", e.getMessage());
             return false;
         }
+    }
+
+    private static boolean validateJwtWithSecp256k1Key(String jwt, String publicKeyString) {
+        boolean result = false;
+        String publicKeyContent = publicKeyString
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s", "");
+
+        byte[] pubKeyBytes = Base64.getDecoder().decode(publicKeyContent);
+
+        try {
+
+            PublicKey publicKey = new ES256KKeyLoader().loadPublicKeyFromSPKIBouncy(pubKeyBytes);
+
+            // Now, verify the token
+            Jws<Claims> claims = Jwts.parser()
+                    .provider(CarelessClinicApplication.securityProvider)
+                    .verifyWith(publicKey)
+                    .build()
+                    .parseSignedClaims(jwt);
+
+            if (claims != null) {
+                System.out.println("JWT is valid. Claims: " + claims.toString());
+                result = true;
+            }
+
+        } catch (Exception e) {
+            log.warn("JWT validation error", e);
+        }
+        return result;
     }
 
     /**
@@ -119,20 +182,4 @@ public class Tools {
         KeyFactory keyFactory = KeyFactory.getInstance("EC"); // ES256 uses Elliptic Curve
         return keyFactory.generatePublic(spec);
     }
-
-    /** ES256 public key for JWT validation */
-    public static final String PUBLIC_KEY = """
-            -----BEGIN PUBLIC KEY-----
-            MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEMU1JFVEO9FkVr0r041GpAWzKvQi1TBYm
-            arJj3+aNeC2aK9GT7Hct1OJGWQGbUkNWTeUr+Ui09PjBit+AMYuHgA==
-            -----END PUBLIC KEY-----
-            """;
-
-    /** Jay's ES256 public key for JWT validation */
-    public static final String JAY_PUBLIC_KEY = """
-            -----BEGIN PUBLIC KEY-----
-            MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdYCSYzUHlSjrjT8ZwHCs54M07C9F
-            vU315fz5Ha/pR2ij89LRm+XMVXBwzpLL4XtspW4GhQA24hNiDdCYa2FV5g==
-            -----END PUBLIC KEY-----
-            """;
 }
